@@ -1,0 +1,13 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:harbour;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE
+    username: sa
+    password:
+  flyway:
+    enabled: false
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+portal:
+  upload-dir: ./build/test-uploads
+  core-credential: test-only-core-credential

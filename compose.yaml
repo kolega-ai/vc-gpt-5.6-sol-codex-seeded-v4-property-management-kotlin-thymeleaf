@@ -1,0 +1,34 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: harbour
+      POSTGRES_USER: harbour
+      POSTGRES_PASSWORD: harbour_local_only
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U harbour -d harbour"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    environment:
+      DATABASE_URL: jdbc:postgresql://postgres:5432/harbour
+      DATABASE_USER: harbour
+      DATABASE_PASSWORD: harbour_local_only
+      UPLOAD_DIR: /app/data/uploads
+      CORE_CREDENTIAL: local-core-credential-change-me
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - uploads:/app/data/uploads
+volumes:
+  postgres_data:
+  uploads:
+

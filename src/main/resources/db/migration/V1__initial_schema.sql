@@ -1,0 +1,26 @@
+create table app_users (id uuid primary key,email varchar(255) not null unique,password_hash varchar(255) not null,display_name varchar(255) not null,role varchar(40) not null,enabled boolean not null,phone varchar(255),building_scope varchar(255),created_at timestamptz not null);
+create table properties (id uuid primary key,name varchar(255) not null,address varchar(255) not null,building_code varchar(255) not null,city varchar(255) not null,manager_id uuid);
+create table units (id uuid primary key,property_id uuid not null,label varchar(255) not null,bedrooms integer not null,occupied boolean not null,market_rent numeric(12,2) not null,currency varchar(3) not null);
+create table tenant_profiles (id uuid primary key,user_id uuid not null unique,emergency_contact varchar(255) not null,household_size integer not null,unit_id uuid);
+create table leases (id uuid primary key,tenant_id uuid not null,unit_id uuid not null,start_date date not null,end_date date not null,rent_amount numeric(12,2) not null,deposit_amount numeric(12,2) not null,currency varchar(3) not null,status varchar(40) not null,version_no bigint not null);
+create table maintenance_tickets (id uuid primary key,tenant_id uuid not null,unit_id uuid not null,title varchar(255) not null,description varchar(4000) not null,category varchar(255) not null,priority varchar(255) not null,status varchar(40) not null,assigned_worker_id uuid,created_at timestamptz not null,updated_at timestamptz not null);
+create table ticket_comments (id uuid primary key,ticket_id uuid not null,author_id uuid not null,body varchar(3000) not null,visibility varchar(40) not null,created_at timestamptz not null);
+create table payments (id uuid primary key,lease_id uuid not null,amount numeric(12,2) not null,currency varchar(3) not null,due_date date not null,paid_date date,status varchar(40) not null,reference varchar(255) not null);
+create table documents (id uuid primary key,owner_id uuid not null,lease_id uuid,ticket_id uuid,inspection_id uuid,category varchar(40) not null,original_name varchar(255) not null,stored_name varchar(255) not null unique,content_type varchar(255) not null,size_bytes bigint not null,tenant_visible boolean not null,version_no integer not null,expires_at date,created_at timestamptz not null);
+create table inspections (id uuid primary key,unit_id uuid not null,scheduled_for timestamptz not null,status varchar(40) not null,findings varchar(4000) not null,follow_up varchar(2000) not null,tenant_visible boolean not null,created_by uuid not null);
+create table messages (id uuid primary key,sender_id uuid not null,recipient_id uuid not null,subject varchar(255) not null,body varchar(3000) not null,internal boolean not null,created_at timestamptz not null);
+create table notifications (id uuid primary key,user_id uuid not null,message varchar(255) not null,link varchar(255) not null,read_flag boolean not null,created_at timestamptz not null);
+create table audit_events (id uuid primary key,actor_id uuid,action varchar(255) not null,resource_type varchar(255) not null,resource_id varchar(255) not null,before_value varchar(4000) not null,after_value varchar(4000) not null,authorization_basis varchar(255) not null,created_at timestamptz not null);
+create table password_reset_tokens (id uuid primary key,token_hash varchar(255) not null unique,user_id uuid not null,expires_at timestamptz not null,used_at timestamptz);
+create table outbox (id uuid primary key,recipient varchar(255) not null,subject varchar(255) not null,body varchar(4000) not null,created_at timestamptz not null,sent_at timestamptz);
+create table integration_settings (id uuid primary key,name varchar(255) not null unique,endpoint varchar(255) not null,enabled boolean not null,secret_hash varchar(255) not null);
+create index idx_units_property on units(property_id);
+create index idx_leases_tenant on leases(tenant_id);
+create index idx_leases_unit on leases(unit_id);
+create index idx_tickets_tenant on maintenance_tickets(tenant_id);
+create index idx_tickets_worker on maintenance_tickets(assigned_worker_id);
+create index idx_tickets_unit on maintenance_tickets(unit_id);
+create index idx_docs_lease on documents(lease_id);
+create index idx_docs_ticket on documents(ticket_id);
+create index idx_audit_created on audit_events(created_at desc);
+

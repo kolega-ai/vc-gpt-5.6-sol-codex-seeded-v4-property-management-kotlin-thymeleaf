@@ -1,0 +1,14 @@
+<!doctype html><html lang="en" xmlns:th="http://www.thymeleaf.org"><body>
+<th:block th:fragment="head(title)"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="_csrf" th:content="${_csrf?.token}"><title th:text="${title} + ' · Harbour'">Harbour</title><link rel="stylesheet" th:href="@{/css/app.css(v=${cacheBuster})}"></th:block>
+<aside class="sidebar" th:fragment="sidebar">
+  <a class="brand" th:href="@{/dashboard}"><span class="brand-mark">H</span><span><strong>Harbour</strong><span>Property operations</span></span></a>
+  <nav class="nav" aria-label="Primary">
+    <a th:href="@{/dashboard}"><span>Overview</span></a><a th:href="@{/tickets}"><span>Maintenance</span></a><a th:if="${actor.role.name() != 'MAINTENANCE_WORKER'}" th:href="@{/leases}"><span>Leases</span></a><a th:if="${actor.role.name() != 'MAINTENANCE_WORKER'}" th:href="@{/payments}"><span>Payments</span></a><a th:href="@{/documents}"><span>Documents</span></a><a th:if="${actor.role.name() != 'MAINTENANCE_WORKER'}" th:href="@{/inspections}"><span>Inspections</span></a><a th:if="${actor.role.name() != 'MAINTENANCE_WORKER'}" th:href="@{/messages}"><span>Messages</span></a>
+    <th:block th:if="${actor.role.name() == 'PROPERTY_ADMIN'}"><p class="nav-label">Administration</p><a th:href="@{/admin/resources}"><span>Portfolio</span></a><a th:href="@{/admin/users}"><span>People & access</span></a><a th:href="@{/admin/import}"><span>Import & export</span></a><a th:href="@{/admin/audit}"><span>Audit trail</span></a></th:block>
+  </nav>
+  <div class="side-account"><strong th:text="${currentUser.displayName}">User</strong><small th:text="${#strings.capitalize(#strings.toLowerCase(#strings.replace(actor.role.name(),'_',' ')))}">Role</small><form th:action="@{/logout}" method="post"><button class="logout">Sign out</button></form></div>
+</aside>
+<header class="topbar" th:fragment="topbar"><p>Good to see you, <strong th:text="${currentUser.displayName}">there</strong></p><div class="top-actions"><a class="notification-pill" th:href="@{/notifications}" th:text="${notificationCount} + ' updates'">0 updates</a><a th:href="@{/profile}">Profile</a></div></header>
+<th:block th:fragment="flash"><div class="flash flash-success" role="status" th:if="${success}" th:text="${success}"></div><div class="flash flash-error" role="alert" th:if="${error}" th:text="${error}"></div></th:block>
+</body></html>
+

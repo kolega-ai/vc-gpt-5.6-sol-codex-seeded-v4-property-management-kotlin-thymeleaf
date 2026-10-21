@@ -1,0 +1,48 @@
+spring:
+  application:
+    name: harbour-property-portal
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/harbour}
+    username: ${DATABASE_USER:harbour}
+    password: ${DATABASE_PASSWORD:harbour_local_only}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate.jdbc.time_zone: UTC
+  flyway:
+    enabled: true
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 11MB
+server:
+  error:
+    include-message: never
+  servlet:
+    session:
+      cookie:
+        http-only: true
+        same-site: lax
+      timeout: 30m
+management:
+  server:
+    port: 8081
+    address: 0.0.0.0
+  endpoints:
+    web:
+      exposure:
+        include: env,heapdump,beans,configprops
+portal:
+  upload-dir: ${UPLOAD_DIR:./data/uploads}
+  core-credential: ${CORE_CREDENTIAL:local-core-credential-change-me}
+  statement-context-key: ${STATEMENT_CONTEXT_KEY:harbour-statement-context-01}
+  directory-url: ${DIRECTORY_URL:ldap://directory.harbour.local:389}
+  directory-base: ${DIRECTORY_BASE:ou=people,dc=harbour,dc=local}
+  directory-bind: ${DIRECTORY_BIND:cn=svc-portal,ou=service,dc=harbour,dc=local}
+  directory-pass: ${DIRECTORY_PASS:}
+  scheme-key: ${SCHEME_KEY:local-deposit-scheme-key}
+  comms-bridge-key: ${COMMS_BRIDGE_KEY:local-comms-bridge-key}
+  device-context-key: ${DEVICE_CONTEXT_KEY:harbour-device-context-01}
+
